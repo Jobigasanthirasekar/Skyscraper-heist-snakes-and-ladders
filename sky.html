@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyscraper Heist: Snakes & Ladders</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --panel-bg: #1f2833;
+            --text-main: #c5c6c7;
+            --neon-green: #66fcf1;
+            --neon-blue: #45a29e;
+            --neon-red: #ff3b3f;
+            --neon-gold: #ffd700;
+            --thief1: #ff4d4d;
+            --thief2: #4d4dff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--neon-green);
+        }
+
+        #game-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Left Panel - Player Stats */
+        .side-panel {
+            background: var(--panel-bg);
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 15px;
+            flex: 1 1 250px;
+            max-width: 300px;
+            box-shadow: 0 0 15px rgba(69, 162, 158, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .player-card {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+        }
+
+        .player-card.active {
+            box-shadow: 0 0 15px inset rgba(255,255,255,0.2);
+            transform: scale(1.02);
+        }
+
+        #p1-card { border-color: var(--thief1); }
+        #p2-card { border-color: var(--thief2); }
+
+        .loot-count { font-weight: bold; color: var(--neon-gold); margin-top: 5px;}
+        .status-badges { display: flex; gap: 5px; margin-top: 10px; height: 24px;}
+        .badge { font-size: 1.2rem; filter: drop-shadow(0 0 2px rgba(255,255,255,0.5)); }
+
+        /* Center - Board */
+        #board-container {
+            flex: 2 1 400px;
+            max-width: 600px;
+            position: relative;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: rgba(0,0,0,0.8);
+            border: 3px solid #333;
+            animation: pulseBoard 4s infinite alternate;
+        }
+
+        @keyframes pulseBoard {
+            0% { box-shadow: 0 0 10px #111, inset 0 0 20px #000; }
+            50% { box-shadow: 0 0 25px rgba(69, 162, 158, 0.4), inset 0 0 30px rgba(102, 252, 241, 0.1); }
+            100% { box-shadow: 0 0 10px #111, inset 0 0 20px #000; }
+        }
+
+        .cell {
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 0.6rem;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .vent-start { background: rgba(102, 252, 241, 0.2); }
+        .guard-start { background: rgba(255, 59, 63, 0.2); }
+
+        /* Player Tokens */
+        .thief-token {
+            position: absolute;
+            width: 7%;
+            height: 7%;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 10px currentColor;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+
+        }
+
+        #token-1 { background: var(--thief1); color: var(--thief1); top: 10%; left: 10%; }
+        #token-2 { background: var(--thief2); color: var(--thief2); bottom: 10%; right: 10%; }
+
+        /* Right Panel - Controls & Terminal */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #dice-container {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: black;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            transition: transform 0.1s;
+        }
+
+        #dice-container:active { transform: scale(0.9); }
+        .shake { animation: shake 0.4s; }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(10deg); }
+            40% { transform: translate(1px, -1px) rotate(-10deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(1px, -1px) rotate(10deg); }
+            100% { transform: translate(1px, 1px) rotate(0deg); }
+        }
+
+        #terminal {
+            background: #000;
+            border: 1px solid var(--neon-green);
+            flex-grow: 1;
+            width: 100%;
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 350px;
+            font-size: 0.85rem;
+            border-radius: 5px;
+            box-shadow: inset 0 0 10px rgba(102, 252, 241, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .log-entry { color: #0f0; margin: 0; }
+        .log-system { color: var(--text-main); }
+        .log-error { color: var(--neon-red); text-shadow: 0 0 5px var(--neon-red); }
+        .log-success { color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
+        .log-loot { color: var(--neon-gold); }
+
+        /* Win Screen */
+        #win-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .win-title {
+            font-size: 4rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px var(--neon-green);
+            animation: winPulse 1.5s infinite;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        @keyframes winPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        @media (max-width: 800px) {
+            #game-wrapper { flex-direction: column; align-items: center; }
+            .side-panel { width: 100%; max-width: 100%; }
+            #board-container { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Skyscraper Heist</h1>
+        <p>10 Floors. 100 Steps. Don't get caught.</p>
+    </header>
+
+    <div id="game-wrapper">
+        <div class="side-panel">
+            <h3 style="text-align: center; color: var(--neon-blue);">CRIMINAL DOSSIERS</h3>
+            
+            <div id="p1-card" class="player-card active">
+                <h4 style="color: var(--thief1);">Thief 1 (Red Balaclava)</h4>
+                <div class="loot-count">Loot Stashed: <span id="p1-loot">0</span> 💰</div>
+                <div class="status-badges" id="p1-badges"></div>
+            </div>
+
+            <div id="p2-card" class="player-card">
+                <h4 style="color: var(--thief2);">Thief 2 (Blue Balaclava)</h4>
+                <div class="loot-count">Loot Stashed: <span id="p2-loot">0</span> 💰</div>
+                <div class="status-badges" id="p2-badges"></div>
+            </div>
+            
+            <div style="margin-top: auto; font-size: 0.8rem; color: #888;">
+                <p>🚨 Alarm: Opponent free roll</p>
+                <p>💰 Loot: Skip 8 sqs</p>
+                <p>🔑 Key: Immune to 1 Guard</p>
+                <p>💣 Bomb: Both go back 5</p>
+                <p>💻 Hack: Steal 10 sqs</p>
+                <p>🕵️ Agent: Reverse next turn</p>
+                <p>🚁 Heli: Jump to floor 6-8</p>
+                <p>⏱️ Timer: Reach checkpoint in 2</p>
+            </div>
+        </div>
+
+        <div id="board-container">
+            <div id="board"></div>
+            <div id="token-1" class="thief-token"></div>
+            <div id="token-2" class="thief-token"></div>
+        </div>
+
+        <div class="side-panel controls">
+            <h3 style="color: var(--neon-blue); text-align: center;">TERMINAL LINK</h3>
+            <div id="dice-container" onclick="rollDice()">🎲</div>
+            <p style="font-size: 0.8rem; color: var(--neon-gold);" id="turn-indicator">Waiting for Thief 1...</p>
+            
+            <div id="terminal">
+                <p class="log-system">System initialized. Breach protocol engaged.</p>
+                <p class="log-system">Infiltrate the skyscraper and escape from the roof.</p>
+            </div>
+
+            <button class="btn" onclick="initGame()" style="width: 100%; padding: 10px; font-size: 1rem;">Abort & Restart</button>
+        </div>
+    </div>
+
+    <div id="win-screen">
+        <h1 class="win-title">MISSION COMPLETE</h1>
+        <h2 id="win-subtitle" style="color: white; margin-bottom: 20px;">Thief escaped the building!</h2>
+        <button class="btn" onclick="initGame()">New Heist</button>
+    </div>
+
+    <script>
+        // Board Data
+        const guards = { 97: 35, 85: 59, 73: 15, 52: 24, 38: 8, 22: 2 }; // Snakes (Caught & dragged back)
+        const vents = { 4: 25, 13: 46, 33: 49, 42: 63, 61: 82, 75: 94 }; // Ladders (Secret vents)
+        
+        // Special Tiles
+        const specialTiles = {
+            10: {type: 'loot', icon: '💰'}, 28: {type: 'loot', icon: '💰'}, 78: {type: 'loot', icon: '💰'},
+            18: {type: 'alarm', icon: '🚨'}, 68: {type: 'alarm', icon: '🚨'},
+            12: {type: 'key', icon: '🔑'}, 56: {type: 'key', icon: '🔑'},
+            45: {type: 'bomb', icon: '💣'}, 88: {type: 'bomb', icon: '💣'},
+            27: {type: 'hack', icon: '💻'}, 55: {type: 'hack', icon: '💻'},
+            37: {type: 'agent', icon: '🕵️'}, 65: {type: 'agent', icon: '🕵️'},
+            15: {type: 'heli', icon: '🚁'}, 70: {type: 'heli', icon: '🚁'},
+            40: {type: 'timer', icon: '⏱️'}, 72: {type: 'timer', icon: '⏱️'}
+        };
+
+        let players = [];
+        let turn = 0; // 0 for Thief 1, 1 for Thief 2
+        let cells = [];
+        let isAnimating = false;
+
+        const boardEl = document.getElementById('board');
+        const terminalEl = document.getElementById('terminal');
+
+        function initGame() {
+            document.getElementById('win-screen').style.display = 'none';
+            players = [
+                { id: 1, name: "Thief 1", color: "var(--thief1)", pos: 1, loot: 0, immune: false, reversed: false, timer: 0, target: 0 },
+                { id: 2, name: "Thief 2", color: "var(--thief2)", pos: 1, loot: 0, immune: false, reversed: false, timer: 0, target: 0 }
+            ];
+            turn = 0;
+            isAnimating = false;
+            
+            terminalEl.innerHTML = '<p class="log-system">System initialized. Breach protocol engaged.</p>';
+            createBoard();
+            updateUI();
+            moveToken(0, 1, true);
+            moveToken(1, 1, true);
+        }
+
+        function createBoard() {
+            boardEl.innerHTML = '';
+            cells = [];
+            
+            // Generate board array (Boustrophedon)
+            for (let row = 9; row >= 0; row--) {
+                for (let col = 0; col < 10; col++) {
+                    let num = row * 10 + (row % 2 === 0 ? col + 1 : 10 - col);
+                    cells[num] = { row: 9 - row, col: col }; // Mapping visual grid coordinates
+                    
+                    let cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = 'cell-' + num;
+                    
+                    let numberSpan = document.createElement('span');
+                    numberSpan.className = 'cell-number';
+                    numberSpan.innerText = num;
+                    cell.appendChild(numberSpan);
+
+                    // Add Icons
+                    if (guards[num]) {
+                        cell.classList.add('guard-start');
+                        cell.innerHTML += `<span class="icon">👮</span>`;
+                    } else if (vents[num]) {
+                        cell.classList.add('vent-start');
+                        cell.innerHTML += `<span class="icon">🪜</span>`;
+                    } else if (specialTiles[num]) {
+                        cell.innerHTML += `<span class="icon">${specialTiles[num].icon}</span>`;
+                    }
+
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function logTerminal(msg, type = 'log-entry') {
+            const p = document.createElement('p');
+            p.className = type;
+            p.innerText = `> ${msg}`;
+            terminalEl.appendChild(p);
+            terminalEl.scrollTop = terminalEl.scrollHeight;
+        }
+
+        function updateUI() {
+            document.getElementById('p1-loot').innerText = players[0].loot;
+            document.getElementById('p2-loot').innerText = players[1].loot;
+
+            // Badges
+            document.getElementById('p1-badges').innerHTML = getBadges(0);
+            document.getElementById('p2-badges').innerHTML = getBadges(1);
+
+            // Active Card
+            document.getElementById('p1-card').classList.toggle('active', turn === 0);
+            document.getElementById('p2-card').classList.toggle('active', turn === 1);
+
+            document.getElementById('turn-indicator').innerText = `Awaiting input from ${players[turn].name}...`;
+        }
+
+        function getBadges(pIndex) {
+            let html = '';
+            let p = players[pIndex];
+            if (p.immune) html += '<span class="badge">🔑</span>';
+            if (p.reversed) html += '<span class="badge">🕵️</span>';
+            if (p.timer > 0) html += `<span class="badge">⏱️${p.timer}</span>`;
+            return html;
+        }
+
+        function moveToken(pIndex, targetPos, instant = false) {
+    targetPos = Math.max(1, Math.min(100, targetPos));
+    players[pIndex].pos = targetPos;
+
+    const token = document.getElementById(`token-${pIndex + 1}`);
+
+    // Calculate row and col from position (boustrophedon)
+    const pos = targetPos - 1; // 0-indexed
+    const row = Math.floor(pos / 10); // 0 = bottom, 9 = top
+    const rowFromTop = 9 - row; // flip: row 0 = bottom = visual row 9
+
+    let col;
+    if (row % 2 === 0) {
+        col = pos % 10; // left to right
+    } else {
+        col = 9 - (pos % 10); // right to left
+    }
+
+    // Each cell is 10% of board width/height
+    const cellX = col * 10;
+    const cellY = rowFromTop * 10;
+
+    // Small offset so tokens don't overlap perfectly
+    const offsetX = pIndex === 0 ? 1 : 4;
+    const offsetY = pIndex === 0 ? 1 : 4;
+
+    if (instant) token.style.transition = 'none';
+    else token.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+
+    token.style.left = `calc(${cellX}% + ${offsetX}%)`;
+    token.style.top = `calc(${cellY}% + ${offsetY}%)`;
+
+    if (instant) setTimeout(() => token.style.transition = '', 50);
+}
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function rollDice() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const diceEl = document.getElementById('dice-container');
+            diceEl.classList.add('shake');
+            
+            // Simulate rolling
+            let roll = 1;
+            for(let i=0; i<10; i++){
+                roll = Math.floor(Math.random() * 6) + 1;
+                diceEl.innerText = ['⚀','⚁','⚂','⚃','⚄','⚅'][roll-1];
+                await delay(40);
+            }
+            diceEl.classList.remove('shake');
+
+            await processTurn(turn, roll);
+        }
+
+        async function processTurn(pIndex, roll, isFreeRoll = false) {
+            let p = players[pIndex];
+            let pName = p.name;
+            
+            logTerminal(`${pName} rolled a ${roll}.`);
+
+            // Timer check logic (Decrement before moving)
+            if (p.timer > 0 && !isFreeRoll) {
+                p.timer--;
+                if (p.timer === 0) {
+                    if (p.pos < p.target) {
+                        logTerminal(`[TIME OUT] ${pName} failed to reach checkpoint. Falling back 10 floors!`, 'log-error');
+                        await animateMove(pIndex, p.pos - 10);
+                    } else {
+                        logTerminal(`[CHECKPOINT] ${pName} secured the checkpoint!`, 'log-success');
+                    }
+                    p.target = 0;
+                }
+            }
+
+            // Reverse logic
+            let moveAmount = roll;
+            if (p.reversed) {
+                moveAmount = -roll;
+                logTerminal(`[DOUBLE AGENT] ${pName} is confused and moved backwards!`, 'log-error');
+                p.reversed = false; 
+            }
+
+            await animateMove(pIndex, p.pos + moveAmount);
+
+            // Check Win state immediately after base move
+            if (players[pIndex].pos === 100) {
+                triggerWin(pIndex);
+                return;
+            }
+
+            // Cell Interactions
+            let newPos = p.pos;
+            let currentCell = newPos;
+
+            if (guards[currentCell]) {
+                if (p.immune) {
+                    logTerminal(`[MASTER KEY] ${pName} bypassed the Security Guard on floor ${currentCell}!`, 'log-success');
+                    p.immune = false;
+                } else {
+                    logTerminal(`[CAUGHT] ${pName} spotted by Security Guard! Dragged down to floor ${guards[currentCell]}.`, 'log-error');
+                    await animateMove(pIndex, guards[currentCell]);
+                }
+            } 
+            else if (vents[currentCell]) {
+                logTerminal(`[SECRET VENT] ${pName} found a vent! Crawling up to floor ${vents[currentCell]}.`, 'log-success');
+                await animateMove(pIndex, vents[currentCell]);
+            }
+            else if (specialTiles[currentCell]) {
+                const tile = specialTiles[currentCell];
+                await handleSpecialTile(pIndex, tile.type);
+            }
+
+            // Re-check win
+            if (players[pIndex].pos === 100) {
+                triggerWin(pIndex);
+                return;
+            }
+
+            // End Turn
+            if (!isFreeRoll) {
+                turn = turn === 0 ? 1 : 0;
+            }
+            
+            updateUI();
+            isAnimating = false;
+        }
+
+        async function animateMove(pIndex, target) {
+            target = Math.max(1, Math.min(100, target));
+            moveToken(pIndex, target);
+            await delay(500); // Wait for transition
+        }
+
+        async function handleSpecialTile(pIndex, type) {
+            let p = players[pIndex];
+            let oppIndex = pIndex === 0 ? 1 : 0;
+            let opp = players[oppIndex];
+            let pName = p.name;
+
+            switch(type) {
+                case 'loot':
+                    logTerminal(`[LOOT] ${pName} found a stash! Escaping 8 floors ahead.`, 'log-loot');
+                    p.loot++;
+                    await animateMove(pIndex, p.pos + 8);
+                    break;
+                case 'alarm':
+                    logTerminal(`[ALARM] ${pName} tripped an alarm! Opponent gets an immediate free dash forward!`, 'log-error');
+                    let freeDash = Math.floor(Math.random() * 6) + 1;
+                    logTerminal(`${opp.name} dashes ${freeDash} floors!`);
+                    await animateMove(oppIndex, opp.pos + freeDash);
+                    break;
+                case 'key':
+                    logTerminal(`[MASTER KEY] ${pName} acquired a master key. Immune to the next guard.`, 'log-success');
+                    p.immune = true;
+                    break;
+                case 'bomb':
+                    logTerminal(`[BOMB EXPLOSION] Blast throws BOTH thieves back 5 floors!`, 'log-error');
+                    await Promise.all([
+                        animateMove(0, players[0].pos - 5),
+                        animateMove(1, players[1].pos - 5)
+                    ]);
+                    break;
+                case 'hack':
+                    logTerminal(`[NETWORK HACK] ${pName} hacked the elevator! Stealing 10 floors from ${opp.name}.`, 'log-success');
+                    await Promise.all([
+                        animateMove(pIndex, p.pos + 10),
+                        animateMove(oppIndex, opp.pos - 10)
+                    ]);
+                    break;
+                case 'agent':
+                    logTerminal(`[DOUBLE AGENT] ${pName} got compromised! Movement reversed on the next turn.`, 'log-error');
+                    p.reversed = true;
+                    break;
+                case 'heli':
+                    let extractPos = Math.floor(Math.random() * 21) + 60; // 60 to 80
+                    logTerminal(`[CHOPPER EXTRACTION] ${pName} grappled to a helicopter! Dropping at floor ${extractPos}.`, 'log-success');
+                    await animateMove(pIndex, extractPos);
+                    break;
+                case 'timer':
+                    let checkpoint = Math.ceil((p.pos + 1) / 10) * 10; 
+                    if(checkpoint > 100) checkpoint = 100;
+                    logTerminal(`[TIMED RUN] ${pName} must reach floor ${checkpoint} in 2 turns or fall back 10 floors!`, 'log-error');
+                    p.timer = 2;
+                    p.target = checkpoint;
+                    break;
+            }
+        }
+
+        function triggerWin(pIndex) {
+            const p = players[pIndex];
+            logTerminal(`[MISSION COMPLETE] ${p.name} HAS ESCAPED THE SKYSCRAPER!`, 'log-success');
+            document.getElementById('win-subtitle').innerText = `${p.name} escaped with ${p.loot} bags of loot!`;
+            document.getElementById('win-screen').style.display = 'flex';
+        }
+
+        // Initialize on load
+        window.onload = initGame;
+    </script>
+</body>
+</html>
