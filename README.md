@@ -9,7 +9,7 @@
 
 **10 Floors. 100 Steps. Don't Get Caught.**
 
-[🎮 Play Now](https://jobigasanthirasekar.github.io/skyscraper-heist-snakes-and-ladders) • [⭐ Star this Repo](https://github.com/Jobigasanthirasekar/skyscraper-heist-snakes-and-ladders)
+[🎮 Play Now]( https://jobigasanthirasekar.github.io/Skyscraper-heist-snakes-and-ladders/) • [⭐ Star this Repo](https://github.com/Jobigasanthirasekar/skyscraper-heist-snakes-and-ladders)
 
 </div>
 
