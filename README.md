@@ -5,7 +5,7 @@ infiltrating a skyscraper. Guards replace snakes, secret vents replace ladders,
 and special power tiles add strategic twists to every move.
 
 ## 🎮 Live Demo
-[Play the Game](https://jobigasanthirasekar.github.io/skyscraper-heist-snakes-and-ladders)
+[Play the Game](https://jobigasanthirasekar.github.io/Skyscraper-heist-snakes-and-ladders/)
 
 ---
 
