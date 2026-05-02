@@ -1,105 +1,74 @@
-# 🏙️ Skyscraper Heist — Snakes & Ladders
+<div align="center">
 
-A cyberpunk-themed 2-player Snakes & Ladders game where you play as thieves
-infiltrating a skyscraper. Guards replace snakes, secret vents replace ladders,
-and special power tiles add strategic twists to every move.
+# 🏙️ SKYSCRAPER HEIST
+### *Snakes & Ladders — Reimagined*
 
-## 🎮 Live Demo
-[Play the Game](https://jobigasanthirasekar.github.io/Skyscraper-heist-snakes-and-ladders/)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
----
+**10 Floors. 100 Steps. Don't Get Caught.**
 
-## 📖 About The Game
-Classic Snakes & Ladders reimagined as a heist mission. Two thieves race to
-the rooftop of a 10-floor skyscraper. Avoid security guards, crawl through
-secret vents, collect loot and use power tiles to outsmart your opponent.
+[🎮 Play Now](https://jobigasanthirasekar.github.io/skyscraper-heist-snakes-and-ladders) • [⭐ Star this Repo](https://github.com/Jobigasanthirasekar/skyscraper-heist-snakes-and-ladders)
 
----
-
-## 👥 Players
-- **Thief 1** — Red Balaclava 🔴
-- **Thief 2** — Blue Balaclava 🔵
-
-Both players play on the same device taking turns.
+</div>
 
 ---
 
-## 🎯 How To Play
-1. Click the 🎲 dice to roll
-2. Your token moves forward by the rolled number
-3. Land on special tiles for bonus effects
-4. First player to reach **Floor 100** wins!
+## 🌆 The Mission
+> Two thieves. One skyscraper. A race to the rooftop.
+> 
+> Crawl through secret vents, dodge security guards,
+> hack elevators and grab the loot before your opponent does.
+> The exit chopper won't wait forever.
 
 ---
 
-## 🪜 Vents (Ladders)
-| Land On | Jump To |
-|---------|---------|
-| 4       | 25      |
-| 13      | 46      |
-| 33      | 49      |
-| 42      | 63      |
-| 61      | 82      |
-| 75      | 94      |
+## 🕹️ Gameplay
+---
+
+## ⚡ Power Tiles
+---
+
+## 🪜 Secret Vents (Ladders)
+## 👮 Security Guards (Snakes)
+---
+
+## 🎨 Features
+- 🌑 Cyberpunk dark neon theme
+- 💻 Live hacker terminal log
+- 🎲 Animated dice rolling
+- 🏃 Smooth token movement
+- 🛡️ Active power up badges
+- 🏆 Mission complete win screen
 
 ---
 
-## 👮 Guards (Snakes)
-| Land On | Dragged To |
-|---------|-----------|
-| 97      | 35        |
-| 85      | 59        |
-| 73      | 15        |
-| 52      | 24        |
-| 38      | 8         |
-| 22      | 2         |
-
----
-
-## ⚡ Special Power Tiles
-| Tile        | Square   | Effect                                      |
-|-------------|----------|---------------------------------------------|
-| 💰 Loot     | 10,28,78 | Move 8 squares forward                      |
-| 🚨 Alarm    | 18,68    | Opponent gets a free dice roll              |
-| 🔑 Key      | 12,56    | Immune to next guard                        |
-| 💣 Bomb     | 45,88    | Both players go back 5 squares             |
-| 💻 Hack     | 27,55    | You gain 10, opponent loses 10 squares     |
-| 🕵️ Agent   | 37,65    | Your next turn moves backwards             |
-| 🚁 Heli     | 15,70    | Jump randomly to floors 60-80              |
-| ⏱️ Timer   | 40,72    | Reach checkpoint in 2 turns or fall back 10|
-
----
-
-## 🎨 Design
-- Cyberpunk dark theme with neon colors
-- Hacker terminal log for all game events
-- Animated dice rolling
-- Smooth token movement across the board
-- Player stats panel with active power-up badges
-- Win screen with loot count
-
----
-
-## 🛠️ Built With
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
-
----
-
-## 📁 Project Structure
----
-
-## 🚀 How To Run Locally
-1. Download or clone this repository
-2. Open `index.html` in your browser
-3. Start playing!
-
+## 🚀 Run Locally
 ```bash
 git clone https://github.com/Jobigasanthirasekar/skyscraper-heist-snakes-and-ladders.git
+cd skyscraper-heist-snakes-and-ladders
+open index.html
 ```
 
 ---
 
-## 🙏 Credits
-Built with ❤️ by Jobigasanthirasekar
+## 🛠️ Built With
+- Vanilla HTML5
+- Vanilla CSS3
+- Vanilla JavaScript
+- Zero dependencies
+- Zero frameworks
+- Pure creativity ✨
+
+---
+
+<div align="center">
+
+**Built with ❤️ by Jobigasanthirasekar**
+
+📍 Chennai, Tamil Nadu, India 🇮🇳
+
+*If you like this project give it a ⭐ on GitHub!*
+
+</div>
